@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gran Ramo Gigante de Flores Amarillas 🌻🌷</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 50% 15%, #fffef0 0%, #fef08a 40%, #facc15 75%, #ca8a04 100%);
+            touch-action: manipulation;
+            overscroll-behavior-y: none;
+        }
+
+        .font-handwriting {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .font-caveat {
+            font-family: 'Caveat', cursive;
+        }
+
+        /* Canvas Overlay for Petals & Magic Particles */
+        .petals-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Grand Golden Radiant Aura Effect behind the bouquet */
+        .golden-aura-grand {
+            position: absolute;
+            width: min(100vw, 550px);
+            height: min(100vw, 550px);
+            background: radial-gradient(circle, rgba(254, 240, 138, 0.98) 0%, rgba(250, 204, 21, 0.7) 45%, rgba(234, 179, 8, 0.2) 70%, rgba(202, 138, 4, 0) 85%);
+            filter: blur(35px);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: auraPulseGrand 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes auraPulseGrand {
+            0% { transform: scale(0.88) rotate(0deg); opacity: 0.85; }
+            100% { transform: scale(1.18) rotate(10deg); opacity: 1; }
+        }
+
+        /* Envelope Container & 3D Interactive Card */
+        .envelope-container {
+            perspective: 1000px;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: min(88vw, 360px);
+            height: min(56vw, 210px);
+            background: linear-gradient(135deg, #fef08a 0%, #facc15 50%, #eab308 100%);
+            border-radius: 18px;
+            box-shadow: 0 20px 40px -10px rgba(161, 98, 7, 0.45), 0 0 25px rgba(250, 204, 21, 0.6);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .envelope-wrapper:active {
+            transform: scale(0.97);
+        }
+
+        /* Flap & Pocket of Envelope */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            border-left: min(44vw, 180px) solid transparent;
+            border-right: min(44vw, 180px) solid transparent;
+            border-top: min(33vw, 130px) solid #ca8a04;
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.6s ease;
+            z-index: 5;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18));
+        }
+
+        .pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            border-left: min(44vw, 180px) solid #fef08a;
+            border-right: min(44vw, 180px) solid #fef08a;
+            border-bottom: min(37vw, 140px) solid #a16207;
+            border-radius: 0 0 18px 18px;
+            z-index: 4;
+        }
+
+        /* Letter Inside Envelope */
+        .letter {
+            position: absolute;
+            bottom: 8px;
+            left: 3%;
+            width: 94%;
+            height: 94%;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), z-index 0.7s ease;
+            z-index: 2;
+            border: 2px dashed #eab308;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Open State classes */
+        .envelope-wrapper.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope-wrapper.open .letter {
+            transform: translateY(-145px) scale(1.05);
+            z-index: 10;
+        }
+
+        @media (min-width: 480px) {
+            .envelope-wrapper.open .letter {
+                transform: translateY(-165px) scale(1.06);
+            }
+        }
+
+        /* Hidden & Reveal Animation for Flowers and Title */
+        .reveal-content {
+            opacity: 0;
+            transform: scale(0.85);
+            pointer-events: none;
+            transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-content.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        /* Swaying animations for bouquet components */
+        .sway-slow {
+            transform-origin: bottom center;
+            animation: swaySlow 5s ease-in-out infinite alternate;
+        }
+
+        .sway-reverse {
+            transform-origin: bottom center;
+            animation: swayReverse 4.5s ease-in-out infinite alternate;
+        }
+
+        .sway-gentle {
+            transform-origin: bottom center;
+            animation: swayGentle 3.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes swaySlow {
+            0% { transform: rotate(-3deg) translateY(0px); }
+            100% { transform: rotate(3deg) translateY(-3px); }
+        }
+
+        @keyframes swayReverse {
+            0% { transform: rotate(3.5deg) translateY(0px); }
+            100% { transform: rotate(-3.5deg) translateY(-4px); }
+        }
+
+        @keyframes swayGentle {
+            0% { transform: rotate(-1.5deg) scale(0.99); }
+            100% { transform: rotate(2deg) scale(1.02); }
+        }
+
+        /* Sparkle twinkle effect */
+        .sparkle-pop {
+            animation: twinklePop 2.2s infinite ease-in-out alternate;
+        }
+
+        @keyframes twinklePop {
+            0% { opacity: 0.2; transform: scale(0.6); }
+            50% { opacity: 1; transform: scale(1.3); }
+            100% { opacity: 0.3; transform: scale(0.8); }
+        }
+    </style>
+</head>
+<body class="h-full w-full min-h-screen overflow-x-hidden flex flex-col justify-between items-center relative select-none pb-4">
+
+    <!-- Audio Element -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="/José José - Piel de Azúcar Cover Audio.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Interactive Background Petal Canvas -->
+    <canvas id="petalCanvas" class="petals-canvas"></canvas>
+
+    <!-- Top Header Navigation Bar -->
+    <header class="w-full max-w-lg px-4 pt-3 flex justify-between items-center z-20">
+        <div class="flex items-center gap-2 bg-amber-100/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-amber-300 shadow-xs">
+            <span class="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                <i class="fa-solid fa-crown text-amber-600"></i>
+                Ramo Gigante Especial ✨
+            </span>
+        </div>
+        
+        <!-- Music Box Toggle Button -->
+        <button id="musicToggle" onclick="toggleAudio()" class="w-10 h-10 rounded-full bg-white/95 shadow-md border border-amber-300 text-amber-600 flex items-center justify-center active:scale-90 transition-all z-30">
+            <i id="musicIcon" class="fa-solid fa-music text-sm"></i>
+        </button>
+    </header>
+
+    <!-- Main Display Section -->
+    <main class="w-full max-w-lg px-3 flex flex-col items-center justify-center flex-1 z-10 py-1 relative">
+        
+        <!-- Title Banner & Bouquet Container (Initially Hidden) -->
+        <div id="flowersSection" class="reveal-content flex flex-col items-center w-full">
+            <!-- Title Banner -->
+            <div class="text-center mb-1">
+                <h1 class="font-handwriting text-5xl sm:text-6xl font-bold text-amber-950 drop-shadow-sm leading-none">
+                    Un Ramo Infinito 🌻🌷
+                </h1>
+                <p class="font-caveat text-lg sm:text-xl text-amber-900 font-semibold mt-0.5">
+                    Lleno de luz, girasoles gigantes y tulipanes radiantes
+                </p>
+            </div>
+
+            <!-- Giant Bouquet SVG Container -->
+            <div class="relative w-full h-[320px] sm:h-[380px] flex justify-center items-end my-1">
+                <!-- Radiant Background Glow Aura -->
+                <div class="golden-aura-grand bottom-2"></div>
+
+                <!-- Grand SVG Bouquet -->
+                <svg class="w-full h-full max-w-lg z-10 filter drop-shadow-2xl" viewBox="0 0 500 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <!-- Sunflower Petal Gradients -->
+                        <linearGradient id="sunPetalGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#fff066" />
+                            <stop offset="55%" stop-color="#facc15" />
+                            <stop offset="100%" stop-color="#ca8a04" />
+                        </linearGradient>
+                        <linearGradient id="sunPetalGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fef9c3" />
+                            <stop offset="60%" stop-color="#eab308" />
+                            <stop offset="100%" stop-color="#854d0e" />
+                        </linearGradient>
+
+                        <!-- Tulip Petal Gradients -->
+                        <linearGradient id="tulipGradLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#fef08a" />
+                            <stop offset="50%" stop-color="#facc15" />
+                            <stop offset="100%" stop-color="#a16207" />
+                        </linearGradient>
+                        <linearGradient id="tulipGradRight" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fff9c4" />
+                            <stop offset="70%" stop-color="#eab308" />
+                            <stop offset="100%" stop-color="#713f12" />
+                        </linearGradient>
+
+                        <!-- Foliage Gradients -->
+                        <linearGradient id="leafDarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#84cc16" />
+                            <stop offset="50%" stop-color="#4d7c0f" />
+                            <stop offset="100%" stop-color="#1a2e05" />
+                        </linearGradient>
+                        <linearGradient id="eucalyptusGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#a3e635" />
+                            <stop offset="100%" stop-color="#3f6212" />
+                        </linearGradient>
+
+                        <!-- Florist Kraft Paper Wrapping Gradient -->
+                        <linearGradient id="paperWrapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#fef9c3" />
+                            <stop offset="40%" stop-color="#fde047" />
+                            <stop offset="85%" stop-color="#d97706" />
+                            <stop offset="100%" stop-color="#92400e" />
+                        </linearGradient>
+
+                        <!-- Ribbon Gradient -->
+                        <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#dc2626" />
+                            <stop offset="50%" stop-color="#ef4444" />
+                            <stop offset="100%" stop-color="#991b1b" />
+                        </linearGradient>
+
+                        <!-- Seed Fibonnaci Core Radial Gradient -->
+                        <radialGradient id="sunSeedCore" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#78350f" />
+                            <stop offset="60%" stop-color="#451a03" />
+                            <stop offset="85%" stop-color="#290e02" />
+                            <stop offset="100%" stop-color="#0f0501" />
+                        </radialGradient>
+                        
+                        <radialGradient id="sparkleGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+                            <stop offset="100%" stop-color="#fef08a" stop-opacity="0" />
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Layer 1: Florist Wrapper Background Cone -->
+                    <g id="wrappingPaperBack">
+                        <!-- Outer Kraft Paper Spread -->
+                        <path d="M 120 420 L 40 220 Q 250 140 460 220 L 380 420 Z" fill="url(#paperWrapGrad)" opacity="0.95"/>
+                        <path d="M 100 240 Q 250 160 400 240 L 250 410 Z" fill="#b45309" opacity="0.3"/>
+                    </g>
+
+                    <!-- Layer 2: Deep Stems & Eucalyptus Foliage Background -->
+                    <g id="denseGreeneryBackground">
+                        <!-- Eucalyptus Sprays Left -->
+                        <path d="M 250 360 Q 150 260 80 180" stroke="#3f6212" stroke-width="4" stroke-linecap="round"/>
+                        <circle cx="90" cy="190" r="12" fill="url(#eucalyptusGrad)" opacity="0.9"/>
+                        <circle cx="110" cy="210" r="14" fill="url(#eucalyptusGrad)" opacity="0.9"/>
+                        <circle cx="130" cy="230" r="15" fill="url(#eucalyptusGrad)" opacity="0.9"/>
+
+                        <!-- Eucalyptus Sprays Right -->
+                        <path d="M 250 360 Q 350 260 420 180" stroke="#3f6212" stroke-width="4" stroke-linecap="round"/>
+                        <circle cx="410" cy="190" r="12" fill="url(#eucalyptusGrad)" opacity="0.9"/>
+                        <circle cx="390" cy="210" r="14" fill="url(#eucalyptusGrad)" opacity="0.9"/>
+                        <circle cx="370" cy="230" r="15" fill="url(#eucalyptusGrad)" opacity="0.9"/>
+
+                        <!-- Big Lush Leaf Fans -->
+                        <path d="M 250 320 Q 80 280 110 180 Q 210 210 250 320 Z" fill="url(#leafDarkGrad)"/>
+                        <path d="M 250 320 Q 420 280 390 180 Q 290 210 250 320 Z" fill="url(#leafDarkGrad)"/>
+                        <path d="M 250 300 Q 140 200 190 120 Q 250 180 250 300 Z" fill="url(#leafDarkGrad)"/>
+                        <path d="M 250 300 Q 360 200 310 120 Q 250 180 250 300 Z" fill="url(#leafDarkGrad)"/>
+                    </g>
+
+                    <!-- Layer 3: Dynamic Flowers (Sunflowers & Tulips) -->
+                    <!-- Sway Group 1 (Left Wing) -->
+                    <g class="sway-slow">
+                        <!-- Top Left Sunflower -->
+                        <g transform="translate(130, 110)">
+                            <g>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(0)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(22.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(45)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(67.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(90)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(112.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(135)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(157.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(180)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(202.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(225)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(247.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(270)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(292.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(315)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(337.5)"/>
+                            </g>
+                            <circle cx="0" cy="0" r="20" fill="url(#sunSeedCore)"/>
+                            <circle cx="0" cy="0" r="16" stroke="#facc15" stroke-dasharray="2,3" stroke-width="1.5" fill="none" opacity="0.8"/>
+                        </g>
+
+                        <!-- Far Left Tulip -->
+                        <g transform="translate(70, 140)">
+                            <path d="M22 45 Q5 22 22 0 Q38 22 22 45Z" fill="url(#tulipGradLeft)"/>
+                            <path d="M5 40 Q-10 18 10 0 Q22 22 22 45Z" fill="url(#tulipGradRight)"/>
+                            <path d="M38 40 Q52 18 32 0 Q22 22 22 45Z" fill="url(#tulipGradRight)"/>
+                        </g>
+
+                        <!-- Mid Left Tulip -->
+                        <g transform="translate(160, 165)">
+                            <path d="M20 40 Q5 20 20 0 Q35 20 20 40Z" fill="url(#tulipGradLeft)"/>
+                            <path d="M5 35 Q-8 15 8 0 Q20 20 20 40Z" fill="url(#tulipGradRight)"/>
+                            <path d="M35 35 Q48 15 32 0 Q20 20 20 40Z" fill="url(#tulipGradRight)"/>
+                        </g>
+                    </g>
+
+                    <!-- Sway Group 2 (Right Wing) -->
+                    <g class="sway-reverse">
+                        <!-- Top Right Sunflower -->
+                        <g transform="translate(370, 110)">
+                            <g>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(0)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(22.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(45)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(67.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(90)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(112.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(135)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(157.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(180)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(202.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(225)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(247.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(270)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(292.5)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad1)" transform="rotate(315)"/>
+                                <path d="M0 -42 C6 -22, 6 -22, 0 0 C-6 -22, -6 -22, 0 -42Z" fill="url(#sunPetalGrad2)" transform="rotate(337.5)"/>
+                            </g>
+                            <circle cx="0" cy="0" r="20" fill="url(#sunSeedCore)"/>
+                            <circle cx="0" cy="0" r="16" stroke="#facc15" stroke-dasharray="2,3" stroke-width="1.5" fill="none" opacity="0.8"/>
+                        </g>
+
+                        <!-- Far Right Tulip -->
+                        <g transform="translate(390, 140)">
+                            <path d="M22 45 Q5 22 22 0 Q38 22 22 45Z" fill="url(#tulipGradLeft)"/>
+                            <path d="M5 40 Q-10 18 10 0 Q22 22 22 45Z" fill="url(#tulipGradRight)"/>
+                            <path d="M38 40 Q52 18 32 0 Q22 22 22 45Z" fill="url(#tulipGradRight)"/>
+                        </g>
+
+                        <!-- Mid Right Tulip -->
+                        <g transform="translate(300, 165)">
+                            <path d="M20 40 Q5 20 20 0 Q35 20 20 40Z" fill="url(#tulipGradLeft)"/>
+                            <path d="M5 35 Q-8 15 8 0 Q20 20 20 40Z" fill="url(#tulipGradRight)"/>
+                            <path d="M35 35 Q48 15 32 0 Q20 20 20 40Z" fill="url(#tulipGradRight)"/>
+                        </g>
+                    </g>
+
+                    <!-- Sway Group 3 (Center Crown & Main Giant Sunflower) -->
+                    <g class="sway-gentle">
+                        <!-- Top Center Tulip Crown -->
+                        <g transform="translate(230, 45)">
+                            <path d="M22 48 Q5 24 22 0 Q38 24 22 48Z" fill="url(#tulipGradLeft)"/>
+                            <path d="M5 42 Q-10 20 10 0 Q22 24 22 48Z" fill="url(#tulipGradRight)"/>
+                            <path d="M38 42 Q52 20 34 0 Q22 24 22 48Z" fill="url(#tulipGradRight)"/>
+                        </g>
+
+                        <!-- Upper Left Mid Sunflower -->
+                        <g transform="translate(190, 95)">
+                            <g>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(0)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(30)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(60)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(90)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(120)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(150)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(180)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(210)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(240)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(270)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(300)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(330)"/>
+                            </g>
+                            <circle cx="0" cy="0" r="16" fill="url(#sunSeedCore)"/>
+                        </g>
+
+                        <!-- Upper Right Mid Sunflower -->
+                        <g transform="translate(310, 95)">
+                            <g>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(0)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(30)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(60)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(90)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(120)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(150)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(180)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(210)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(240)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(270)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad1)" transform="rotate(300)"/>
+                                <path d="M0 -36 C5 -18, 5 -18, 0 0 C-5 -18, -5 -18, 0 -36Z" fill="url(#sunPetalGrad2)" transform="rotate(330)"/>
+                            </g>
+                            <circle cx="0" cy="0" r="16" fill="url(#sunSeedCore)"/>
+                        </g>
+
+                        <!-- CENTRAL GIANT SUNFLOWER (Main Focal Point) -->
+                        <g transform="translate(250, 140)">
+                            <!-- 24 Dense Large Petals -->
+                            <g>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(0)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(15)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(30)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(45)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(60)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(75)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(90)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(105)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(120)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(135)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(150)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(165)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(180)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(195)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(210)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(225)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(240)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(255)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(270)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(285)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(300)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(315)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad1)" transform="rotate(330)"/>
+                                <path d="M0 -58 C8 -30, 8 -30, 0 0 C-8 -30, -8 -30, 0 -58Z" fill="url(#sunPetalGrad2)" transform="rotate(345)"/>
+                            </g>
+                            <!-- Center Core -->
+                            <circle cx="0" cy="0" r="28" fill="url(#sunSeedCore)"/>
+                            <circle cx="0" cy="0" r="22" stroke="#facc15" stroke-dasharray="3,3" stroke-width="2" fill="none" opacity="0.8"/>
+                            <circle cx="0" cy="0" r="14" stroke="#fef08a" stroke-dasharray="2,2" stroke-width="1.5" fill="none" opacity="0.9"/>
+                        </g>
+                    </g>
+
+                    <!-- Layer 4: Front Florist Paper Folds & Satin Bow -->
+                    <g id="wrappingPaperFront">
+                        <!-- Overlapping Paper Folds -->
+                        <path d="M 80 230 L 250 380 L 220 420 L 40 250 Z" fill="url(#paperWrapGrad)" opacity="0.95"/>
+                        <path d="M 420 230 L 250 380 L 280 420 L 460 250 Z" fill="url(#paperWrapGrad)" opacity="0.95"/>
+                        
+                        <!-- Paper Highlights & Shadow -->
+                        <path d="M 80 230 L 250 380" stroke="#fef08a" stroke-width="3" opacity="0.8"/>
+                        <path d="M 420 230 L 250 380" stroke="#fef08a" stroke-width="3" opacity="0.8"/>
+
+                        <!-- Big Red Satin Ribbon & Bow -->
+                        <g id="satinBow">
+                            <path d="M 180 340 C 130 310, 140 370, 220 350 Z" fill="url(#ribbonGrad)"/>
+                            <path d="M 320 340 C 370 310, 360 370, 280 350 Z" fill="url(#ribbonGrad)"/>
+                            
+                            <!-- Ribbon Tails -->
+                            <path d="M 235 355 L 190 420 L 225 410 L 245 360 Z" fill="#b91c1c"/>
+                            <path d="M 265 355 L 310 420 L 275 410 L 255 360 Z" fill="#b91c1c"/>
+                            
+                            <!-- Center Knot -->
+                            <rect x="235" y="342" width="30" height="20" rx="6" fill="#dc2626"/>
+                            <circle cx="250" cy="352" r="5" fill="#facc15"/>
+                        </g>
+                    </g>
+
+                    <!-- Layer 5: Floating Magical Sparkle Particles -->
+                    <g id="magicSparkles">
+                        <circle cx="100" cy="60" r="5" fill="url(#sparkleGlow)" class="sparkle-pop" />
+                        <circle cx="400" cy="70" r="6" fill="url(#sparkleGlow)" class="sparkle-pop" style="animation-delay: 0.6s;" />
+                        <circle cx="250" cy="15" r="7" fill="url(#sparkleGlow)" class="sparkle-pop" style="animation-delay: 1.2s;" />
+                        <circle cx="180" cy="220" r="4" fill="url(#sparkleGlow)" class="sparkle-pop" style="animation-delay: 0.3s;" />
+                        <circle cx="320" cy="230" r="5" fill="url(#sparkleGlow)" class="sparkle-pop" style="animation-delay: 0.9s;" />
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Interactive Letter Envelope Section -->
+        <div id="envelopeContainer" class="envelope-container my-2 z-20">
+            <div id="envelope" class="envelope-wrapper" onclick="toggleEnvelope()">
+                <div class="flap"></div>
+                
+                <!-- Editable Letter inside Envelope -->
+                <div class="letter" onclick="event.stopPropagation()">
+                    <div>
+                        <div class="flex justify-between items-center mb-1 border-b border-amber-200 pb-1">
+                            <span class="font-handwriting text-3xl font-bold text-amber-950">Para Itzél... 🌻💛</span>
+                            <i class="fa-solid fa-heart text-amber-500 text-xs animate-ping"></i>
+                        </div>
+                        <div id="letterContent" class="text-xs text-slate-800 leading-relaxed overflow-y-auto max-h-24 pr-1 font-normal outline-none focus:bg-amber-50/90 rounded-sm p-1 transition-all" contenteditable="false">
+                            TinkyWinky. Nuestra unica neurona y el autismo une tanto nestra amistad que cada que nos vemos incluso hasta creo que pensamos lo mismo. Grac ias por compartir este server llamado vida. Recuerda que tu eres alguien importante para mi y especial, nunca olvides ese gran valor que tienes y que pase lo que pase aqui me tienes ¡Gracias por existir! ✨🌷
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-amber-200 flex justify-between items-center text-[11px]">
+                        <button onclick="toggleEditMode()" id="editBtn" class="text-amber-900 hover:text-amber-950 font-bold flex items-center gap-1 bg-amber-100/90 px-2.5 py-1 rounded-md transition-all shadow-2xs active:scale-95">
+                            <i class="fa-solid fa-pen text-[10px]"></i> <span id="editBtnText">Personalizar</span>
+                        </button>
+                        <span class="font-handwriting text-xl text-amber-900 font-bold">Con todo mi cariño</span>
+                    </div>
+                </div>
+
+                <div class="pocket"></div>
+                
+                <!-- Wax Seal -->
+                <div id="seal" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-amber-500 text-amber-950 w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-amber-200 transition-all duration-300 pointer-events-none">
+                    <i class="fa-solid fa-heart text-base text-amber-950"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tap Instruction Banner -->
+        <p id="tapInstruction" class="text-xs text-amber-950 font-bold my-1.5 flex items-center gap-1.5 bg-white/80 backdrop-blur-sm px-3.5 py-1 rounded-full shadow-2xs animate-bounce z-20">
+            <i class="fa-solid fa-hand-pointer text-amber-700 text-xs"></i> Toca el sobre para abrir la carta
+        </p>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-1 text-[11px] text-amber-950/80 font-semibold z-10">
+        Un detalle espectacular de Girasoles & Tulipanes Amarillos 💛
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md text-white text-xs px-4 py-2.5 rounded-full shadow-2xl z-50 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 max-w-[90vw]">
+        <i class="fa-solid fa-circle-check text-amber-400 text-sm"></i>
+        <span id="toastMsg">Mensaje copiado con éxito</span>
+    </div>
+
+    <script>
+        // --- 1. Continuous Falling Yellow Petals Canvas (60 FPS Mobile-Optimized) ---
+        const canvas = document.getElementById('petalCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const petals = [];
+        const petalCount = window.innerWidth < 480 ? 35 : 60;
+
+        class Petal {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = -20;
+                this.size = Math.random() * 10 + 6;
+                this.speedY = Math.random() * 1.4 + 0.8;
+                this.speedX = Math.random() * 0.9 - 0.45;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 2 - 1;
+                this.opacity = Math.random() * 0.75 + 0.25;
+                this.type = Math.floor(Math.random() * 3);
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y / 30) + this.speedX;
+                this.rotation += this.rotationSpeed;
+
+                if (this.y > height + 20) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.globalAlpha = this.opacity;
+
+                ctx.beginPath();
+                if (this.type === 0) {
+                    ctx.fillStyle = '#facc15';
+                    ctx.ellipse(0, 0, this.size / 1.6, this.size, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.fillStyle = '#ca8a04';
+                    ctx.ellipse(0, 0, this.size / 3.5, this.size / 3, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (this.type === 1) {
+                    ctx.fillStyle = '#fef08a';
+                    ctx.ellipse(0, 0, this.size, this.size / 1.8, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.fillStyle = '#eab308';
+                    ctx.ellipse(0, 0, this.size / 3, this.size / 3, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.arc(0, 0, this.size / 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < petalCount; i++) {
+            const p = new Petal();
+            p.y = Math.random() * height;
+            petals.push(p);
+        }
+
+        function animatePetals() {
+            ctx.clearRect(0, 0, width, height);
+            petals.forEach(petal => {
+                petal.update();
+                petal.draw();
+            });
+            requestAnimationFrame(animatePetals);
+        }
+        animatePetals();
+
+        // --- 2. Audio Control ---
+        const bgMusic = document.getElementById('bgMusic');
+        let isPlaying = false;
+
+        function startAudio() {
+            if (!isPlaying) {
+                bgMusic.play().then(() => {
+                    isPlaying = true;
+                    document.getElementById('musicIcon').className = "fa-solid fa-volume-high text-amber-600 animate-pulse";
+                }).catch(e => console.log("Audio play prevented:", e));
+            }
+        }
+
+        function toggleAudio() {
+            const icon = document.getElementById('musicIcon');
+            if (isPlaying) {
+                bgMusic.pause();
+                isPlaying = false;
+                icon.className = "fa-solid fa-music text-sm";
+                showToast("Música pausada");
+            } else {
+                bgMusic.play();
+                isPlaying = true;
+                icon.className = "fa-solid fa-volume-high text-amber-600 animate-pulse";
+                showToast("Música activada 🎵");
+            }
+        }
+
+        // --- 3. Interactive Envelope & Reveal Flow ---
+        let isOpen = false;
+
+        function toggleEnvelope() {
+            const envelope = document.getElementById('envelope');
+            const seal = document.getElementById('seal');
+            const tapInstruction = document.getElementById('tapInstruction');
+            const flowersSection = document.getElementById('flowersSection');
+
+            isOpen = !isOpen;
+
+            if (isOpen) {
+                startAudio();
+                
+                envelope.classList.add('open');
+                seal.style.opacity = '0';
+                seal.style.transform = 'translate(-50%, -50%) scale(0.3)';
+                tapInstruction.innerHTML = '<i class="fa-solid fa-sparkles text-amber-600"></i> ¡Un detalle inolvidable para ti!';
+                tapInstruction.classList.remove('animate-bounce');
+
+                // Revelar ramo de flores y encabezado
+                flowersSection.classList.add('active');
+            } else {
+                envelope.classList.remove('open');
+                seal.style.opacity = '1';
+                seal.style.transform = 'translate(-50%, -50%) scale(1)';
+                tapInstruction.innerHTML = '<i class="fa-solid fa-hand-pointer text-amber-700 text-xs"></i> Toca el sobre para abrir la carta';
+                tapInstruction.classList.add('animate-bounce');
+
+                // Ocultar flores si se vuelve a cerrar
+                flowersSection.classList.remove('active');
+            }
+        }
+
+        // --- 4. Custom Message Editing ---
+        let isEditing = false;
+        function toggleEditMode() {
+            const letterContent = document.getElementById('letterContent');
+            const editBtnText = document.getElementById('editBtnText');
+
+            isEditing = !isEditing;
+
+            if (isEditing) {
+                letterContent.contentEditable = "true";
+                letterContent.focus();
+                editBtnText.innerText = "Guardar";
+                showToast("Escribe tu propio mensaje en la carta ✍️");
+            } else {
+                letterContent.contentEditable = "false";
+                editBtnText.innerText = "Personalizar";
+                showToast("¡Mensaje guardado! ✨");
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+
+            toastMsg.innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2800);
+        }
+    </script>
+</body>
+</html>
